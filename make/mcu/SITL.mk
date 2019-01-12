@@ -7,7 +7,7 @@ MCU_COMMON_SRC  := $(ROOT)/lib/main/dyad/dyad.c
 #Flags
 ARCH_FLAGS      =
 DEVICE_FLAGS    =
-LD_SCRIPT       = src/main/target/SITL/parameter_group.ld
+LD_SCRIPT       = src/main/target/SITL/pg.ld
 STARTUP_SRC     =
 
 TARGET_FLAGS    = -D$(TARGET)
@@ -25,7 +25,6 @@ MCU_EXCLUDES = \
             drivers/dma.c \
             drivers/pwm_output.c \
             drivers/timer.c \
-            drivers/light_led.c \
             drivers/system.c \
             drivers/rcc.c \
             drivers/serial_escserial.c \
@@ -33,7 +32,7 @@ MCU_EXCLUDES = \
             drivers/serial_uart.c \
             drivers/serial_uart_init.c \
             drivers/serial_uart_pinconfig.c \
-            drivers/rx_xn297.c \
+            drivers/rx/rx_xn297.c \
             drivers/display_ug2864hsweg01.c \
             telemetry/crsf.c \
             telemetry/srxl.c \

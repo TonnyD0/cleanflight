@@ -1,26 +1,29 @@
 /*
- * This file is part of Cleanflight.
+ * This file is part of Cleanflight and Betaflight.
  *
- * Cleanflight is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Cleanflight and Betaflight are free software. You can redistribute
+ * this software and/or modify this software under the terms of the
+ * GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option)
+ * any later version.
  *
- * Cleanflight is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * Cleanflight and Betaflight are distributed in the hope that they
+ * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Cleanflight.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this software.
+ *
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <stdint.h>
 #include <stdbool.h>
 
-#include <platform.h>
+#include "platform.h"
 
-#ifdef TARGET_CONFIG
+#ifdef USE_TARGET_CONFIG
 #include "common/axis.h"
 
 #include "config/feature.h"
@@ -32,6 +35,8 @@
 
 #include "flight/mixer.h"
 #include "flight/pid.h"
+
+#include "pg/rx.h"
 
 #include "rx/rx.h"
 
@@ -58,28 +63,38 @@ void targetConfiguration(void)
         rxConfigMutable()->spektrum_sat_bind = 5;
         rxConfigMutable()->spektrum_sat_bind_autoreset = 1;
 #else
-        serialConfigMutable()->portConfigs[findSerialPortIndexByIdentifier(SERIAL_PORT_USART2)].functionMask = FUNCTION_TELEMETRY_FRSKY;
-        rxConfigMutable()->sbus_inversion = 0;
+        serialConfigMutable()->portConfigs[findSerialPortIndexByIdentifier(SERIAL_PORT_USART2)].functionMask = FUNCTION_TELEMETRY_FRSKY_HUB;
+        rxConfigMutable()->serialrx_inverted = true;
         featureSet(FEATURE_TELEMETRY);
 #endif
         parseRcChannels("TAER1234", rxConfigMutable());
 
-        pidProfilesMutable(0)->pid[PID_ROLL].P = 80;
-        pidProfilesMutable(0)->pid[PID_ROLL].I = 37;
-        pidProfilesMutable(0)->pid[PID_ROLL].D = 35;
-        pidProfilesMutable(0)->pid[PID_PITCH].P = 100;
-        pidProfilesMutable(0)->pid[PID_PITCH].I = 37;
-        pidProfilesMutable(0)->pid[PID_PITCH].D = 35;
-        pidProfilesMutable(0)->pid[PID_YAW].P = 180;
-        pidProfilesMutable(0)->pid[PID_YAW].D = 45;
+        for (uint8_t pidProfileIndex = 0; pidProfileIndex < MAX_PROFILE_COUNT; pidProfileIndex++) {
+            pidProfile_t *pidProfile = pidProfilesMutable(pidProfileIndex);
 
-        controlRateProfilesMutable(0)->rcRate8 = 100;
-        controlRateProfilesMutable(0)->rcYawRate8 = 100;
-        controlRateProfilesMutable(0)->rcExpo8 = 15;
-        controlRateProfilesMutable(0)->rcYawExpo8 = 15;
-        controlRateProfilesMutable(0)->rates[PID_ROLL] = 80;
-        controlRateProfilesMutable(0)->rates[PID_PITCH] = 80;
-        controlRateProfilesMutable(0)->rates[PID_YAW] = 80;
+            pidProfile->pid[PID_ROLL].P = 80;
+            pidProfile->pid[PID_ROLL].I = 37;
+            pidProfile->pid[PID_ROLL].D = 35;
+            pidProfile->pid[PID_PITCH].P = 100;
+            pidProfile->pid[PID_PITCH].I = 37;
+            pidProfile->pid[PID_PITCH].D = 35;
+            pidProfile->pid[PID_YAW].P = 180;
+            pidProfile->pid[PID_YAW].D = 45;
+        }
+
+        for (uint8_t rateProfileIndex = 0; rateProfileIndex < CONTROL_RATE_PROFILE_COUNT; rateProfileIndex++) {
+            controlRateConfig_t *controlRateConfig = controlRateProfilesMutable(rateProfileIndex);
+
+            controlRateConfig->rcRates[FD_ROLL] = 100;
+            controlRateConfig->rcRates[FD_PITCH] = 100;
+            controlRateConfig->rcRates[FD_YAW] = 100;
+            controlRateConfig->rcExpo[FD_ROLL] = 15;
+            controlRateConfig->rcExpo[FD_PITCH] = 15;
+            controlRateConfig->rcExpo[FD_YAW] = 15;
+            controlRateConfig->rates[PID_ROLL] = 80;
+            controlRateConfig->rates[PID_PITCH] = 80;
+            controlRateConfig->rates[PID_YAW] = 80;
+        }
     }
 }
 #endif

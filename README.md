@@ -11,6 +11,8 @@ used on the majority of flight controllers used around the world.  There is no o
 * If you're looking for advanced navigation features then check out the [iNav fork](https://github.com/iNavFlight/inav).
 * All other users should use Cleanflight.
 
+## Features
+
 Features:
 
 * Awesome flight performance as trusted by the majority of Acrobatic and Racing Drone pilots.
@@ -47,7 +49,7 @@ If you are using Windows and don't have an IRC client installed, take a look at 
 
 There's a dedicated Slack chat channel for betaflight here:
 
-http://www.betaflight.tk/
+https://slack.betaflight.com/
 
 Etiquette: Don't ask to ask and please wait around long enough for a reply - sometimes people are out flying, asleep or at work and can't answer immediately.
 
@@ -126,7 +128,7 @@ Big thanks to current and past contributors:
 * Bardwell, Joshua (joshuabardwell)
 * ctzsnooze
 * Höglund, Anders (andershoglund)
-* Ledvin, Peter (ledvinap) - **IO code awesomeness!**
+* Ledvina, Petr (ledvinap) - **IO code awesomeness!**
 * kc10kevin
 * Keeble, Gary (MadmanK)
 * Keller, Michael (mikeller) - **Configurator brilliance**

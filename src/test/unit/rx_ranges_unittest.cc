@@ -22,10 +22,12 @@
 
 extern "C" {
     #include "platform.h"
-
+    #include "build/debug.h"
     #include "drivers/io.h"
     #include "common/maths.h"
-    #include "config/parameter_group_ids.h"
+    #include "pg/pg.h"
+    #include "pg/pg_ids.h"
+    #include "pg/rx.h"
     #include "fc/rc_controls.h"
     #include "fc/rc_modes.h"
     #include "rx/rx.h"
@@ -34,10 +36,10 @@ extern "C" {
 #include "unittest_macros.h"
 #include "gtest/gtest.h"
 
-#define DE_ACTIVATE_ALL_BOXES   0
-
 extern "C" {
-uint32_t rcModeActivationMask;
+boxBitmask_t rcModeActivationMask;
+int16_t debug[DEBUG16_VALUE_COUNT];
+uint8_t debugMode = 0;
 
 extern uint16_t applyRxChannelRangeConfiguraton(int sample, const rxChannelRangeConfig_t *range);
 }
@@ -46,7 +48,7 @@ extern uint16_t applyRxChannelRangeConfiguraton(int sample, const rxChannelRange
 
 TEST(RxChannelRangeTest, TestRxChannelRanges)
 {
-    rcModeActivationMask = DE_ACTIVATE_ALL_BOXES;   // BOXFAILSAFE must be OFF
+    memset(&rcModeActivationMask, 0, sizeof(rcModeActivationMask)); // BOXFAILSAFE must be OFF
 
     // No signal, special condition
     EXPECT_EQ(0, applyRxChannelRangeConfiguraton(0, RANGE_CONFIGURATION(1000, 2000)));

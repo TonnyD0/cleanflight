@@ -1,4 +1,24 @@
 /*
+ * This file is part of Cleanflight and Betaflight.
+ *
+ * Cleanflight and Betaflight are free software. You can redistribute
+ * this software and/or modify this software under the terms of the
+ * GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Cleanflight and Betaflight are distributed in the hope that they
+ * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this software.
+ *
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
  * Supports the GY-91 MPU9250 and BMP280 development board via SPI1
  *
  * Put the MAX7456 on SPI2 instead of an SDCARD
@@ -10,26 +30,30 @@
  *    #define SPI2_MOSI_PIN   PB15
  *
  * @author Nathan Tsoi
- *
- * This software is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #pragma once
 
 #define TARGET_BOARD_IDENTIFIER "SDF3" // STM Discovery F3
 
-#define CONFIG_FASTLOOP_PREFERRED_ACC ACC_NONE
+// Removed to make the firmware fit into flash (in descending order of priority):
+//#undef USE_GYRO_OVERFLOW_CHECK
+//#undef USE_GYRO_LPF2
+
+//#undef USE_RC_SMOOTHING_FILTER
+//#undef USE_ITERM_RELAX
+
+//#undef USE_TELEMETRY_HOTT
+//#undef USE_TELEMETRY_MAVLINK
+#undef USE_TELEMETRY_LTM
+//#undef USE_SERIALRX_XBUS
+
+#undef USE_BOARD_INFO
+//#undef USE_RX_MSP
+#undef USE_RTC_TIME
+#undef USE_EXTENDED_CMS_MENUS
+#undef USE_ESC_SENSOR_INFO
+
 
 #define CURRENT_TARGET_CPU_VOLTAGE 3.0
 
@@ -38,7 +62,8 @@
 #define LED1_PIN                PE10 // Orange LEDs - PE10/PE14
 #define LED1_INVERTED
 
-#define BEEPER                  PD12
+#define USE_BEEPER
+#define BEEPER_PIN              PD12
 #define BEEPER_PWM_HZ           2000  // Beeper PWM frequency in Hz
 
 #define USE_SPI
@@ -59,8 +84,8 @@
 #define USE_FLASHFS
 #define USE_FLASH_M25P16
 
-#define M25P16_CS_PIN           PB12
-#define M25P16_SPI_INSTANCE     SPI2
+#define FLASH_CS_PIN            PB12
+#define FLASH_SPI_INSTANCE      SPI2
 // SPI1
 // PB5  SPI1_MOSI
 // PB4  SPI1_MISO
@@ -73,13 +98,13 @@
 // PB13 SPI2_SCK
 // PB12 SPI2_NSS
 
-#define GYRO
+#define USE_GYRO
 #define USE_FAKE_GYRO
-#define USE_GYRO_L3GD20
-#define L3GD20_SPI              SPI1
-#define L3GD20_CS_PIN           PE3
-#define GYRO_L3GD20_ALIGN       CW270_DEG
-#define USE_GYRO_L3G4200D
+//#define USE_GYRO_L3GD20
+//#define L3GD20_SPI              SPI1
+//#define L3GD20_CS_PIN           PE3
+//#define GYRO_L3GD20_ALIGN       CW270_DEG
+//#define USE_GYRO_L3G4200D
 #define USE_GYRO_MPU3050
 #define USE_GYRO_MPU6050
 #define USE_GYRO_SPI_MPU6000
@@ -95,7 +120,7 @@
 #define MPU9250_CS_PIN          SPI2_NSS_PIN
 #define MPU9250_SPI_INSTANCE    SPI2
 // BMI160 gyro support
-//#define USE_ACCGYRO_BMI160
+#define USE_ACCGYRO_BMI160
 #ifdef USE_ACCGYRO_BMI160
 #define BMI160_CS_PIN           SPI2_NSS_PIN
 #define BMI160_SPI_INSTANCE     SPI2
@@ -105,13 +130,13 @@
 #define USE_EXTI
 #endif
 
-#define ACC
+#define USE_ACC
 #define USE_FAKE_ACC
-#define USE_ACC_ADXL345
-#define USE_ACC_BMA280
-#define USE_ACC_MMA8452
+//#define USE_ACC_ADXL345
+//#define USE_ACC_BMA280
+//#define USE_ACC_MMA8452
 #define USE_ACC_MPU6050
-#define USE_ACC_LSM303DLHC
+//#define USE_ACC_LSM303DLHC
 #define USE_ACC_MPU6000
 #define USE_ACC_SPI_MPU6000
 #define USE_ACC_MPU6500
@@ -120,18 +145,15 @@
 #define USE_ACC_SPI_MPU9250
 #define ACC_MPU6500_ALIGN       CW270_DEG_FLIP
 
-#define BARO
+#define USE_BARO
 #define USE_FAKE_BARO
 #define USE_BARO_BMP085
 #define USE_BARO_BMP280
 #define USE_BARO_MS5611
 
-#define OSD
-#define USE_MAX7456
-#define MAX7456_SPI_INSTANCE    SPI2
-#define MAX7456_SPI_CS_PIN      SPI2_NSS_PIN
-
-#define CMS
+//#define USE_MAX7456
+//#define MAX7456_SPI_INSTANCE    SPI2
+//#define MAX7456_SPI_CS_PIN      SPI2_NSS_PIN
 
 //#define USE_SDCARD
 //
@@ -144,16 +166,16 @@
 //
 //// Note, this is the same DMA channel as UART1_RX. Luckily we don't use DMA for USART Rx.
 //#define SDCARD_DMA_CHANNEL_TX               DMA1_Channel5
-//#define SDCARD_DMA_CHANNEL_TX_COMPLETE_FLAG DMA1_FLAG_TC5
 
 // Performance logging for SD card operations:
 // #define AFATFS_USE_INTROSPECTIVE_LOGGING
 
-#define MAG
+#define USE_MAG
 #define USE_FAKE_MAG
 #define USE_MAG_AK8963
 #define USE_MAG_AK8975
 #define USE_MAG_HMC5883
+#define USE_MAG_QMC5883
 
 #define USE_VCP
 #define USE_UART1
@@ -176,6 +198,13 @@
 #define USE_I2C_DEVICE_1
 #define I2C_DEVICE              (I2CDEV_1)
 
+#define LSM303DLHC_I2C                       I2C1
+#define LSM303DLHC_I2C_SCK_PIN               PB6
+#define LSM303DLHC_I2C_SDA_PIN               PB7
+#define LSM303DLHC_DRDY_PIN                  PE2
+#define LSM303DLHC_I2C_INT1_PIN              PE4
+#define LSM303DLHC_I2C_INT2_PIN              PE5
+
 #define USE_ADC
 #define ADC_INSTANCE            ADC1
 #define VBAT_ADC_PIN            PC0
@@ -183,11 +212,10 @@
 #define RSSI_ADC_PIN            PC2
 #define EXTERNAL1_ADC_PIN       PC3
 
-#define USE_ESC_SENSOR
-
-#define SONAR
-#define SONAR_TRIGGER_PIN       PB0
-#define SONAR_ECHO_PIN          PB1
+#define USE_RANGEFINDER
+#define USE_RANGEFINDER_HCSR04
+#define RANGEFINDER_HCSR04_TRIGGER_PIN       PB0
+#define RANGEFINDER_HCSR04_ECHO_PIN          PB1
 
 #define USE_SERIAL_4WAY_BLHELI_INTERFACE
 

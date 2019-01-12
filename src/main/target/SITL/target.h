@@ -1,26 +1,34 @@
 /*
- * This file is part of Cleanflight.
+ * This file is part of Cleanflight and Betaflight.
  *
- * Cleanflight is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Cleanflight and Betaflight are free software. You can redistribute
+ * this software and/or modify this software under the terms of the
+ * GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option)
+ * any later version.
  *
- * Cleanflight is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * Cleanflight and Betaflight are distributed in the hope that they
+ * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Cleanflight.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this software.
+ *
+ * If not, see <http://www.gnu.org/licenses/>.
  */
+
+// SITL (software in the loop) simulator
 
 #pragma once
 
-// SITL (software in the loop) simulator
+#include <stdint.h>
+#include <stddef.h>
+
+#include "common/utils.h"
+
 #define TARGET_BOARD_IDENTIFIER "SITL"
 
-#define SIMULATOR_BUILD
 #define SIMULATOR_MULTITHREAD
 
 // use simulatior's attitude directly
@@ -35,7 +43,7 @@
 // file name to save config
 #define EEPROM_FILENAME "eeprom.bin"
 #define EEPROM_IN_RAM
-#define EEPROM_SIZE     8192
+#define EEPROM_SIZE     32768
 
 #define U_ID_0 0
 #define U_ID_1 1
@@ -49,16 +57,16 @@
 
 #define USE_FAKE_LED
 
-#define ACC
+#define USE_ACC
 #define USE_FAKE_ACC
 
-#define GYRO
+#define USE_GYRO
 #define USE_FAKE_GYRO
 
-#define MAG
+#define USE_MAG
 #define USE_FAKE_MAG
 
-#define BARO
+#define USE_BARO
 #define USE_FAKE_BARO
 
 #define USABLE_TIMER_CHANNEL_COUNT 0
@@ -84,12 +92,13 @@
 
 #undef STACK_CHECK // I think SITL don't need this
 #undef USE_DASHBOARD
-#undef TELEMETRY_LTM
+#undef USE_TELEMETRY_LTM
 #undef USE_ADC
 #undef USE_VCP
+#undef USE_OSD
 #undef USE_PPM
 #undef USE_PWM
-#undef SERIAL_RX
+#undef USE_SERIAL_RX
 #undef USE_SERIALRX_CRSF
 #undef USE_SERIALRX_IBUS
 #undef USE_SERIALRX_SBUS
@@ -97,23 +106,25 @@
 #undef USE_SERIALRX_SUMD
 #undef USE_SERIALRX_SUMH
 #undef USE_SERIALRX_XBUS
-#undef LED_STRIP
-#undef TELEMETRY_FRSKY
-#undef TELEMETRY_HOTT
-#undef TELEMETRY_SMARTPORT
-#undef TELEMETRY_MAVLINK
+#undef USE_LED_STRIP
+#undef USE_TELEMETRY_FRSKY_HUB
+#undef USE_TELEMETRY_HOTT
+#undef USE_TELEMETRY_SMARTPORT
+#undef USE_TELEMETRY_MAVLINK
 #undef USE_RESOURCE_MGMT
-#undef CMS
-#undef TELEMETRY_CRSF
-#undef TELEMETRY_IBUS
-#undef TELEMETRY_JETIEXBUS
-#undef TELEMETRY_SRXL
+#undef USE_CMS
+#undef USE_TELEMETRY_CRSF
+#undef USE_TELEMETRY_IBUS
+#undef USE_TELEMETRY_JETIEXBUS
+#undef USE_TELEMETRY_SRXL
 #undef USE_SERIALRX_JETIEXBUS
-#undef VTX_COMMON
-#undef VTX_CONTROL
-#undef VTX_SMARTAUDIO
-#undef VTX_TRAMP
+#undef USE_VTX_COMMON
+#undef USE_VTX_CONTROL
+#undef USE_VTX_SMARTAUDIO
+#undef USE_VTX_TRAMP
 #undef USE_CAMERA_CONTROL
+#undef USE_BRUSHED_ESC_AUTODETECT
+#undef USE_GPS_RESCUE
 
 #undef USE_I2C
 #undef USE_SPI
@@ -132,12 +143,17 @@
 
 
 // belows are internal stuff
-#include <stdint.h>
-#include <stddef.h>
 
 uint32_t SystemCoreClock;
 
-#define UNUSED(x) (void)(x)
+#ifdef EEPROM_IN_RAM
+extern uint8_t eepromData[EEPROM_SIZE];
+#define __config_start (*eepromData)
+#define __config_end (*ARRAYEND(eepromData))
+#else
+extern uint8_t __config_start;   // configured via linker script when building binaries.
+extern uint8_t __config_end;
+#endif
 
 typedef enum
 {
@@ -241,11 +257,11 @@ void FLASH_Lock(void);
 FLASH_Status FLASH_ErasePage(uintptr_t Page_Address);
 FLASH_Status FLASH_ProgramWord(uintptr_t addr, uint32_t Data);
 
-uint64_t nanos64_real();
-uint64_t micros64_real();
-uint64_t millis64_real();
+uint64_t nanos64_real(void);
+uint64_t micros64_real(void);
+uint64_t millis64_real(void);
 void delayMicroseconds_real(uint32_t us);
-uint64_t micros64();
-uint64_t millis64();
+uint64_t micros64(void);
+uint64_t millis64(void);
 
 int lockMainPID(void);
